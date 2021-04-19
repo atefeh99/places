@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Services\RouteDistanceService;
-use App\Http\Services\AirDistanceService;
+use App\Http\Services\DistanceService;
 use App\Helper\OdataQueryParser;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Responder;
+use App\Exceptions\Handler;
+
 
 
 class DistanceController extends Controller
@@ -23,6 +25,7 @@ class DistanceController extends Controller
         $responder = new Responder();
         $validate = Validator::make($request->all(), [
             '$filter' => 'string|required'
+
         ]);
         if ($validate->fails()) {
             return $responder->respondInvalidParams('1000', $validate->errors(), 'bad request');
@@ -62,12 +65,23 @@ class DistanceController extends Controller
         } else {
             $take = env('DEFAULT_TOP');
         }
+        if (isset($odata_query['orderBy'])) {
+            $validate = Validator::make(['orderBy' => $odata_query['orderBy']], [
+                'orderBy' => 'required'
+            ]);
+            if ($validate->fails()) {
+                return $responder->respondInvalidParams('1025', $validate->errors(), 'bad request');
+            }
+            $sort = true;
+        } else {
+            $sort = env('SORTED');
+        }
 
         if (isset($odata_query['filter'])) {
             foreach ($odata_query['filter'] as $item) {
                 if ($item['left'] == 'lon' && $item['operator'] == '=') {
                     $validate = Validator::make(['lon' => $item['right']], [
-                        'lon' => 'numeric|required'
+                        'lon' => 'numeric|required|between:-180,180'
                     ]);
                     if ($validate->fails()) {
                         return $responder->respondInvalidParams('1002', $validate->errors(), 'bad request');
@@ -77,7 +91,7 @@ class DistanceController extends Controller
 
                 if ($item['left'] == 'lat' && $item['operator'] == '=') {
                     $validate = Validator::make(['lat' => $item['right']], [
-                        'lat' => 'numeric|required'
+                        'lat' => 'numeric|required|between:-90,90'
                     ]);
                     if ($validate->fails()) {
                         return $responder->respondInvalidParams('1003', $validate->errors(), 'bad request');
@@ -106,7 +120,7 @@ class DistanceController extends Controller
                 }
             }
         }
-        return ['lon' => $lon, 'lat' => $lat, 'type' => $type, 'buffer' => $buf, 'take' => $take, 'skip' => $skip];
+        return ['lon' => $lon, 'lat' => $lat, 'type' => $type, 'buffer' => $buf, 'take' => $take, 'skip' => $skip, 'sort' => $sort];
     }
 
     /**
@@ -115,7 +129,7 @@ class DistanceController extends Controller
      * count nearest places of type specified in request in the buffer distance
      */
 
-    public function numberOfNearestPlaces(Request $request)
+    public function count(Request $request)
     {
         $responder = new Responder();
         $input = self::filter($request);
@@ -125,20 +139,11 @@ class DistanceController extends Controller
             $lat1 = $input['lat'];
             $type = $input['type'];
             $buf = $input['buffer'];
-            $uri = $this->getUri($request);
-
-            if ($uri === 'air') {
-                $result = AirDistanceService::numberOfNearestPlaces($lon1, $lat1, $type, $buf);
-            } else {
-                $result = RouteDistanceService::numberOfNearestPlaces($lon1, $lat1, $type, $buf);
-            }
-
-            if ($result['data'] !== 'unauthorized' and $result['data']) {
+            $result = DistanceService::numberOfNearestPlaces($lon1, $lat1, $type, $buf);
+            if ($result['data']) {
                 return response()->json($result['count'], 200);
-            } elseif (is_null($result['data'])) {
-                return $responder->respondNoFound('not found', 1014);
             } else {
-                return $responder->respondError('unauthorized', 401, 1015);
+                return $responder->respondNoFound('not found', 1009);
             }
         } else {
             return $input;
@@ -146,16 +151,12 @@ class DistanceController extends Controller
 
     }
 
-
     /**
      * @param Request $request
-     * @param $path
-     * @param $method
      * @return mixed
-     * the nearest place of type specified in request
      */
 
-    public function nearestPlace(Request $request, $path, $method)
+    public function index(Request $request)
     {
         $responder = new Responder();
         $input = self::filter($request);
@@ -166,33 +167,57 @@ class DistanceController extends Controller
             $buf = $input['buffer'];
             $take = $input['take'];
             $skip = $input['skip'];
-
-            if ($path === 'air-nearest') {
-                if ($method === '$value') {
-                    $result = AirDistanceService::nearestPlace($lon1, $lat1, $type);
-                } else {
-                    $result = AirDistanceService::listOfNearestPlaces($lon1, $lat1, $type, $buf, $take, $skip);
-                }
-            } else {
-                if ($method === '$value') {
-                    $result = RouteDistanceService::nearestPlace($lon1, $lat1, $type);
-                } else {
-                    $result = RouteDistanceService::listOfNearestPlaces($lon1, $lat1, $type, $buf, $take, $skip);
-                }
-            }
-
-
-            if ($result['data'] !== 'unauthorized' and $result['data'] and $method === '$value') {
-                return $responder->respondItemResult($result['data']);
-            } elseif ($result['data'] !== 'unauthorized' and $result['data'] and $method === '$list') {
+            $sort = $input['sort'];
+            $result = DistanceService::listOfNearestPlaces($lon1, $lat1, $type, $buf, $take, $skip, $sort);
+            if ($result['data']) {
                 return $responder->respondArrayResult($result['data'], $result['count']);
-            } elseif (!$result['data']) {
-                return $responder->respondNoFound('not found', 1012);
             } else {
-                return $responder->respondError('unauthorized', 401, 1013);
+                return $responder->respondNoFound('not found', 1012);
             }
+
         } else {
             return $input;
         }
     }
+
+
+    /**
+     * @param Request $request
+     * @param $nearest
+     * @return mixed
+     * the nearest place of type specified in request
+     */
+
+    public function nearestPlace(Request $request, $nearest): mixed
+    {
+        $input = self::filter($request);
+        $responder = new Responder();
+
+        if (!(is_object($input))) {
+            $lon1 = $input['lon'];
+            $lat1 = $input['lat'];
+            $type = $input['type'];
+            if ($nearest === 'air-nearest') {
+                $result = DistanceService::airNearest($lon1, $lat1, $type);
+            } else {
+                $result = DistanceService::routeNearest($lon1, $lat1, $type);
+            }
+
+            if ($result['data'] !== 'unauthorized' and $result['data']) {
+                return $responder->respondItemResult($result['data']);
+            } elseif (!$result['data']) {
+                return $responder->respondNoFound('not found', 1014);
+            } else {
+                return $responder->respondError('unauthorized', 401, 1500);
+            }
+
+        } else {
+            return $input;
+        }
+
+    }
+
+
+
+
 }

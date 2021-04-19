@@ -8,9 +8,11 @@ return [
         '403' => 'forbidden',
         '404' => 'resource not found',
         '405' => 'method not allowed',
+        '408' => 'request timeout',
         '409' => 'resource conflict',
         '429' => 'too many request exception, retry after :retry hours',
         '500' => 'internal server error',
+        '503' => 'Database Error',
         'token' => [
             'revoke' => 'successfully revoked',
             'client_revoke_notice' => 'your old token is going to revoke in 24 hours'

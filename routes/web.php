@@ -20,6 +20,10 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->get('/{path}/{method}', 'DistanceController@nearestPlace');
+$router->get('/count', 'DistanceController@count');
+$router->get('/list', 'DistanceController@index');
+$router->get('/{nearest}', 'DistanceController@nearestPlace');
+
+
 
 
