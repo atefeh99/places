@@ -117,7 +117,8 @@ class Handler extends ExceptionHandler
             }
 
             if ($return_object['status'] >= 500) {
-                Slack::send($e, $request, $response);
+//                Slack::send($e, $request, $response);
+                return ('database exc');
             }
             return response()->json(
                 $return_object, $return_object['status']

@@ -29,7 +29,6 @@
          $client = self::createClient();
 
          if ($client->send($msg)) {
-             dd('sent');
          }
      }
 

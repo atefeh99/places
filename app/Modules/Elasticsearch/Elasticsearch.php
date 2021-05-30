@@ -149,7 +149,7 @@ class Elasticsearch
 
     public static function count($params)
     {
-        $hosts = [env("ELASTIC_HOST") . ":" . env("ELASTIC_PORT")];
+        $hosts = [env("ELASTIC_HOST"). ":" . env("ELASTIC_PORT")] ;
         $client = ClientBuilder::create()->setHosts($hosts)->build();
         return $client->count($params)['count'];
     }

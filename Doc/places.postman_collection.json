@@ -11,7 +11,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8000/air-nearest?$filter=lat eq 89 and lon eq 45 and type eq school ",
+					"raw": "localhost:8000/air-nearest?$filter=lat eq  35.599566 and lon eq 51.435220 and type eq school ",
 					"host": [
 						"localhost"
 					],
@@ -22,7 +22,7 @@
 					"query": [
 						{
 							"key": "$filter",
-							"value": "lat eq 89 and lon eq 45 and type eq school "
+							"value": "lat eq  35.599566 and lon eq 51.435220 and type eq school "
 						}
 					]
 				}
@@ -35,7 +35,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8000/route-nearest?$filter=lat eq 89 and lon eq 45 and type eq school ",
+					"raw": "localhost:8000/route-nearest?$filter=lat eq  35.599566 and lon eq 51.435220  and type eq school ",
 					"host": [
 						"localhost"
 					],
@@ -46,7 +46,7 @@
 					"query": [
 						{
 							"key": "$filter",
-							"value": "lat eq 89 and lon eq 45 and type eq school "
+							"value": "lat eq  35.599566 and lon eq 51.435220  and type eq school "
 						}
 					]
 				}
@@ -59,18 +59,18 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8000/count?$filter=lat eq 89 and lon eq 45 and type eq school buffer eq 15000",
+					"raw": "localhost:8000/count?$filter=lat eq  35.599566 and lon eq 51.435220 and type eq school and buffer eq 15000",
 					"host": [
 						"localhost"
 					],
-					"port": "8000",
+					"port": "8001",
 					"path": [
 						"count"
 					],
 					"query": [
 						{
 							"key": "$filter",
-							"value": "lat eq 89 and lon eq 45 and type eq school buffer eq 15000"
+							"value": "lat eq  35.599566 and lon eq 51.435220 and type eq school and buffer eq 15000"
 						}
 					]
 				}
@@ -83,7 +83,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8000/list?$skip=10&$top=10&$filter=lat eq 89 and lon eq 45 and type eq school buffer eq 15000 and sort eq true",
+					"raw": "localhost:8000/list?$skip=10&$top=10&$filter=lat eq  35.599566 and lon eq 51.435220 and type eq school buffer eq 15000 and sort eq true",
 					"host": [
 						"localhost"
 					],
@@ -102,7 +102,7 @@
 						},
 						{
 							"key": "$filter",
-							"value": "lat eq 89 and lon eq 45 and type eq school buffer eq 15000 and sort eq true"
+							"value": "lat eq  35.599566 and lon eq 51.435220 and type eq school buffer eq 15000 and sort eq true"
 						}
 					]
 				}

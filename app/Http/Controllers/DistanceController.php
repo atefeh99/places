@@ -133,7 +133,6 @@ class DistanceController extends Controller
     {
         $responder = new Responder();
         $input = self::filter($request);
-
         if (!(is_object($input))) {
             $lon1 = $input['lon'];
             $lat1 = $input['lat'];
@@ -141,7 +140,7 @@ class DistanceController extends Controller
             $buf = $input['buffer'];
             $result = DistanceService::numberOfNearestPlaces($lon1, $lat1, $type, $buf);
             if ($result['data']) {
-                return response()->json($result['count'], 200);
+                return $responder->respondItemResult(["count"=>$result['count']]);
             } else {
                 return $responder->respondNoFound('not found', 1009);
             }
