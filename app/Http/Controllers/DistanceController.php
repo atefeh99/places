@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\UnauthorizedUserException;
 use Illuminate\Http\Request;
 use App\Http\Services\RouteDistanceService;
 use App\Http\Services\DistanceService;
@@ -9,7 +10,6 @@ use App\Helper\OdataQueryParser;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Responder;
 use App\Exceptions\Handler;
-
 
 
 class DistanceController extends Controller
@@ -140,7 +140,7 @@ class DistanceController extends Controller
             $buf = $input['buffer'];
             $result = DistanceService::numberOfNearestPlaces($lon1, $lat1, $type, $buf);
             if ($result['data']) {
-                return $responder->respondItemResult(["count"=>$result['count']]);
+                return $responder->respondItemResult(["count" => $result['count']]);
             } else {
                 return $responder->respondNoFound('not found', 1009);
             }
@@ -183,11 +183,10 @@ class DistanceController extends Controller
     /**
      * @param Request $request
      * @param $nearest
-     * @return mixed
      * the nearest place of type specified in request
      */
 
-    public function nearestPlace(Request $request, $nearest): mixed
+    public function nearestPlace(Request $request, $nearest)
     {
         $input = self::filter($request);
         $responder = new Responder();
@@ -198,8 +197,13 @@ class DistanceController extends Controller
             $type = $input['type'];
             if ($nearest === 'air-nearest') {
                 $result = DistanceService::airNearest($lon1, $lat1, $type);
+
             } else {
-                $result = DistanceService::routeNearest($lon1, $lat1, $type);
+                $api_key = $request->header('x-api-key');
+                if (!isset($api_key)) {
+                    throw new UnauthorizedUserException(trans('messages.custom.unauthorized_user'), 2001);
+                }
+                $result = DistanceService::routeNearest($lon1, $lat1, $type, $api_key);
             }
 
             if ($result['data'] !== 'unauthorized' and $result['data']) {
@@ -215,8 +219,6 @@ class DistanceController extends Controller
         }
 
     }
-
-
 
 
 }
