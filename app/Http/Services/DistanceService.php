@@ -43,6 +43,7 @@ class DistanceService
         if ($places) {
             $data = $places;
             $count = count($places);
+
         } else {
             $data = null;
         }
@@ -59,6 +60,7 @@ class DistanceService
     {
         $params = Elasticsearch::setParams($lon1, $lat1, $type, null, 1, 0, true, true);
         $data = Elasticsearch::getPlaces($params);
+
         return ['data' => $data[0]];
     }
 
@@ -79,7 +81,6 @@ class DistanceService
             $res = self::setDistance($places, $lon1, $lat1, $api_key);
             if ($res !== 'unauthorized') {
                 $sorted_res = self::sortByDistance($res);
-                $sorted_res[0]->distance = $sorted_res[0]->distance . ' m';
                 $data = $sorted_res[0];
             } else {
                 $data = $res;
@@ -103,13 +104,14 @@ class DistanceService
         $result = array();
         $distance = null;
         foreach ($places as $place) {
-            $lon2 = $place->location['location01']['lon'];
-            $lat2 = $place->location['location01']['lat'];
+            $lon2 = $place->location['coordinates'][0];
+            $lat2 = $place->location['coordinates'][1];
             $distance = self::getDistance($lon1, $lat1, $lon2, $lat2, $api_key);
             if ($distance == null) {
                 return 'unauthorized';
             }
-            $place->distance = $distance;
+            $place->distance['amount'] = $distance;
+
             $result[] = $place;
         }
         return $result;
@@ -153,7 +155,7 @@ class DistanceService
     {
         for ($i = 0; $i <= count($array) - 1; $i++) {
             for ($j = $i + 1; $j <= count($array) - 1; $j++) {
-                if ($array[$i]->distance > $array[$j]->distance) {
+                if ($array[$i]->distance['amount'] > $array[$j]->distance['amount']) {
                     $temp = $array[$j];
                     $array[$j] = $array[$i];
                     $array[$i] = $temp;

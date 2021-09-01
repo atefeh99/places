@@ -98,16 +98,29 @@ class Elasticsearch
             return null;
         } else {
             $places = array();
-                foreach ($query['hits']['hits'] as $q) {
-                    $src = $q['_source'];
-                    if (isset($query['hits']['hits'][0]['fields'])) {
-                        $dist = $q['fields']['distance_in_meters'][0] . ' m';
+            foreach ($query['hits']['hits'] as $q) {
+                $src = $q['_source'];
+                if (isset($query['hits']['hits'][0]['fields'])) {
+                    $dist = $q['fields']['distance_in_meters'][0];
 
-                    } else {
-                        $dist = null;
-                    }
-                    $place = self::createPlace($src, $dist);
-                    $places[] = $place;
+                } else {
+                    $dist = null;
+                }
+                $place = self::createPlace($src, $dist);
+                $place_lat = $place->location['location01']['lat'];
+                $place_lon = $place->location['location01']['lon'];
+                unset($place->location);
+                $place->location['type'] = 'point';
+                $place->location['coordinates'] = [
+                    $place_lon,
+                    $place_lat
+                ];
+                $amount = $place->distance;
+                unset($place->distance);
+                $place->distance['amount'] = $amount;
+                $place->distance['unit'] = 'meters';
+
+                $places[] = $place;
 
             }
             return $places;
@@ -149,7 +162,7 @@ class Elasticsearch
 
     public static function count($params)
     {
-        $hosts = [env("ELASTIC_HOST"). ":" . env("ELASTIC_PORT")] ;
+        $hosts = [env("ELASTIC_HOST") . ":" . env("ELASTIC_PORT")];
         $client = ClientBuilder::create()->setHosts($hosts)->build();
         return $client->count($params)['count'];
     }
