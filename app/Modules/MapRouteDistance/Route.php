@@ -1,11 +1,12 @@
 <?php
+
 namespace App\Modules\MapRouteDistance;
 
 use App\Modules\MapRouteDistance\CURL;
 
 class Route
 {
-    private  $coordinates, $alternatives, $steps, $overview, $type, $apiKey;
+    private $coordinates, $alternatives, $steps, $overview, $type, $apiKey;
     public $response;
 
     public function __construct($url)
@@ -13,7 +14,7 @@ class Route
         $this->url = $url;
     }
 
-    public function get($coordinates, $alternatives, $steps = true, $overview = true, $type = 'Route', $apiKey)
+    public function get($coordinates, $alternatives, $apiKey, $steps = true, $overview = true, $type = 'Route')
     {
         $this->coordinates = $coordinates;
         $this->alternatives = $alternatives;
@@ -25,68 +26,71 @@ class Route
         $curl = new CURL(
             $this->makeURL()
         );
+
         $curl->setHeaders([
             'Content-Type: application/json',
-            'x-api-key:'.$this->apiKey
+            'x-api-key:' . $this->apiKey
         ]);
         $curl->post();
         return $curl->parse();
     }
+
     private function getSteps()
     {
-        if($this->steps){
+        if ($this->steps) {
             return 'true';
-        }else{
+        } else {
             return 'false';
         }
     }
+
     private function getAlternatives()
     {
-        if($this->alternatives){
+        if ($this->alternatives) {
             return 'true';
-        }else{
+        } else {
             return 'false';
         }
     }
+
     private function makeURL()
     {
-        switch ($this->type)
-        {
+        switch ($this->type) {
             case 'BicycleRoute' :
                 return $this->url
-                    .'routes/bicycle/v1/driving/'
-                    .$this->coordinates
-                    .'?alternatives='.$this->getAlternatives()
-                    .'&steps='.$this->getSteps()
-                    .'&overview='.$this->overview;
+                    . '/bicycle/v1/driving/'
+                    . $this->coordinates
+                    . '?alternatives=' . $this->getAlternatives()
+                    . '&steps=' . $this->getSteps()
+                    . '&overview=' . $this->overview;
             case 'FootRoute' :
                 return $this->url
-                    .'routes/foot/v1/driving/'
-                    .$this->coordinates
-                    .'?alternatives='.$this->alternatives
-                    .'&steps='.$this->getSteps()
-                    .'&overview='.$this->overview;
+                    . '/foot/v1/driving/'
+                    . $this->coordinates
+                    . '?alternatives=' . $this->alternatives
+                    . '&steps=' . $this->getSteps()
+                    . '&overview=' . $this->overview;
             case 'RouteTarh' :
                 return $this->url
-                    .'routes/tarh/v1/driving/'
-                    .$this->coordinates
-                    .'?alternatives='.$this->getAlternatives()
-                    .'&steps='.$this->getSteps()
-                    .'&overview='.$this->overview;
+                    . '/tarh/v1/driving/'
+                    . $this->coordinates
+                    . '?alternatives=' . $this->getAlternatives()
+                    . '&steps=' . $this->getSteps()
+                    . '&overview=' . $this->overview;
             case 'RouteZojOFard' :
                 return $this->url
-                    .'routes/zojofard/v1/driving/'
-                    .$this->coordinates
-                    .'?alternatives='.$this->getAlternatives()
-                    .'&steps='.$this->getSteps()
-                    .'&overview='.$this->overview;
+                    . '/zojofard/v1/driving/'
+                    . $this->coordinates
+                    . '?alternatives=' . $this->getAlternatives()
+                    . '&steps=' . $this->getSteps()
+                    . '&overview=' . $this->overview;
             default:
                 return $this->url
-                    .'routes/route/v1/driving/'
-                    .$this->coordinates
-                    .'?alternatives='.$this->getAlternatives()
-                    .'&steps='.$this->getSteps()
-                    .'&overview='.$this->overview;
+                    . '/route/v1/driving/'
+                    . $this->coordinates
+                    . '?alternatives=' . $this->getAlternatives()
+                    . '&steps=' . $this->getSteps()
+                    . '&overview=' . $this->overview;
         }
     }
 

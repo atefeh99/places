@@ -17,6 +17,7 @@ return [
             'revoke' => 'successfully revoked',
             'client_revoke_notice' => 'your old token is going to revoke in 24 hours'
         ],
+        'unauthorized_user' => 'x-api-key is required',
         'error' => [
             'no_data' => 'your request has no content or content is not valid',
             'try_later' => 'please try later',
