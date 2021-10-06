@@ -39,6 +39,7 @@ class DistanceService
         // $air_dist = $sort;
         $params = Elasticsearch::setParams($lon1, $lat1, $type, $buf, $take, $skip, true, $sort);
         $places = Elasticsearch::getPlaces($params);
+        dd($places);
         $count = 0;
         if ($places) {
             $data = $places;
