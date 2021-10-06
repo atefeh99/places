@@ -133,6 +133,8 @@ class Elasticsearch
     {
         $hosts = [env("ELASTIC_HOST") . ":" . env("ELASTIC_PORT")];
         $client = ClientBuilder::create()->setHosts($hosts)->build();
+//        dd($params);
+//        dd($client->search($params));
         return $client->search($params);
     }
 
