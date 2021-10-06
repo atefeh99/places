@@ -203,7 +203,7 @@ class DistanceController extends Controller
                 if (!isset($api_key)) {
                     throw new UnauthorizedUserException(trans('messages.custom.unauthorized_user'), 2001);
                 }
-                $result = DistanceService::routeNearest($lon1, $lat1, $type, $api_key);
+                $result = DistanceService::routeNearest($lon1, $lat1, $type);
             }
 
             if ($result['data'] !== 'unauthorized' and $result['data']) {

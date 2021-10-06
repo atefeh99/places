@@ -72,13 +72,13 @@ class DistanceService
      * @return array|null[]
      */
 
-    public static function routeNearest($lon1, $lat1, $type, $api_key)
+    public static function routeNearest($lon1, $lat1, $type)
     {
         $data = null;
         $params = Elasticsearch::setParams($lon1, $lat1, $type, null, 100, 0, false, true);
         $places = Elasticsearch::getPlaces($params);
         if ($places) {
-            $res = self::setDistance($places, $lon1, $lat1, $api_key);
+            $res = self::setDistance($places, $lon1, $lat1);
             if ($res !== 'unauthorized') {
                 $sorted_res = self::sortByDistance($res);
                 $data = $sorted_res[0];
@@ -98,7 +98,7 @@ class DistanceService
      * @return array|string
      */
 
-    public static function setDistance($places, $lon1, $lat1, $api_key)
+    public static function setDistance($places, $lon1, $lat1)
     {
 
         $result = array();
@@ -106,7 +106,7 @@ class DistanceService
         foreach ($places as $place) {
             $lon2 = $place->location['coordinates'][0];
             $lat2 = $place->location['coordinates'][1];
-            $distance = self::getDistance($lon1, $lat1, $lon2, $lat2, $api_key);
+            $distance = self::getDistance($lon1, $lat1, $lon2, $lat2);
             if ($distance == null) {
                 return 'unauthorized';
             }
@@ -128,7 +128,7 @@ class DistanceService
      * use map.ir api to calculate route distance
      */
 
-    public static function getDistance($lon1, $lat1, $lon2, $lat2, $api_key)
+    public static function getDistance($lon1, $lat1, $lon2, $lat2)
     {
         $url = env('MAP_URL');
         $coordinates = $lon1 . ',' . $lat1 . ';' . $lon2 . ',' . $lat2;
@@ -138,7 +138,7 @@ class DistanceService
         $type = 'Route';
         $route = new Route($url);
         $dist = null;
-        $re = $route->get($coordinates, $alternatives, $api_key, $steps, $overview, $type);
+        $re = $route->get($coordinates, $alternatives, $steps, $overview, $type);
         if (isset($re['code']) && $re['code'] == "Ok") {
             $dist = $re['routes'][0]['legs'][0]['distance'];
         }
