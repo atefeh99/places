@@ -14,14 +14,14 @@ class Route
         $this->url = $url;
     }
 
-    public function get($coordinates, $alternatives, $apiKey, $steps = true, $overview = true, $type = 'Route')
+    public function get($coordinates, $alternatives, $steps = true, $overview = true, $type = 'Route')
     {
         $this->coordinates = $coordinates;
         $this->alternatives = $alternatives;
         $this->steps = $steps;
         $this->overview = $overview;
         $this->type = $type;
-        $this->apiKey = $apiKey;
+//        $this->apiKey = $apiKey;
 
         $curl = new CURL(
             $this->makeURL()
