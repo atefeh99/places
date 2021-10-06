@@ -49,7 +49,7 @@ class Responder
             ->setStatusCode(Response::HTTP_OK)
             ->respond([
                 'odata.count' => $count,
-                'data' => $data
+                'value' => $data
             ]);
     }
 
