@@ -41,6 +41,7 @@ class DistanceController extends Controller
         $lat = env('DEFAULT_LAT');
         $type = env('DEFAULT_TYPE');
         $buf = env('DEFAULT_BUFFER');
+        $sort = env('SORTED');
 
         if (isset($odata_query['skip'])) {
             $validate = Validator::make(['skip' => $odata_query['skip']], [
@@ -65,17 +66,18 @@ class DistanceController extends Controller
         } else {
             $take = env('DEFAULT_TOP');
         }
-        if (isset($odata_query['orderBy'])) {
-            $validate = Validator::make(['orderBy' => $odata_query['orderBy']], [
-                'orderBy' => 'required'
-            ]);
-            if ($validate->fails()) {
-                return $responder->respondInvalidParams('1025', $validate->errors(), 'bad request');
-            }
-            $sort = true;
-        } else {
-            $sort = env('SORTED');
-        }
+//        if (isset($odata_query['orderBy'])) {
+//            $validate = Validator::make(['orderBy' => $odata_query['orderBy']], [
+//                'orderBy' => 'required'
+//            ]);
+//            if ($validate->fails()) {
+//                return $responder->respondInvalidParams('1025', $validate->errors(), 'bad request');
+//            }
+////            dd($odata_query['orderBy']);
+//            $sort = true;
+//        } else {
+//            $sort = env('SORTED');
+//        }
 
         if (isset($odata_query['filter'])) {
             foreach ($odata_query['filter'] as $item) {
@@ -117,6 +119,15 @@ class DistanceController extends Controller
                         return $responder->respondInvalidParams('1005', $validate->errors(), 'bad request');
                     }
                     $buf = $item['right'];
+                }
+                if ($item['left'] == 'sort' && $item['operator'] == '=') {
+                    $validate = Validator::make(['sort' => $item['right']], [
+                        'sort' => 'string|required'
+                    ]);
+                    if ($validate->fails()) {
+                        return $responder->respondInvalidParams('2003', $validate->errors(), 'bad request');
+                    }
+                    $sort = $item['right'];
                 }
             }
         }

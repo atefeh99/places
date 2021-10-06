@@ -41,7 +41,7 @@ class Elasticsearch
             $query_parts['body']['size'] = $take;
         }
         if ($lon1 and $lat1) {
-            if ($sort) {
+            if ($sort=='true') {
                 $sort = ['_geo_distance' => [
                     'locations.location01' => [
                         'lat' => $lat1,
