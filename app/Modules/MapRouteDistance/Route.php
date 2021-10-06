@@ -27,10 +27,10 @@ class Route
             $this->makeURL()
         );
 
-        $curl->setHeaders([
-            'Content-Type: application/json',
-            'x-api-key:' . $this->apiKey
-        ]);
+//        $curl->setHeaders([
+//            'Content-Type: application/json',
+//            'x-api-key:' . $this->apiKey
+//        ]);
         $curl->post();
         return $curl->parse();
     }
