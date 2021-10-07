@@ -1,0 +1,119 @@
+{
+	"info": {
+		"_postman_id": "acab9a2b-72f2-4983-995c-1975b53fc409",
+		"name": "places",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "air-nearest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/air-nearest?$filter=lat eq 35.599566 and lon eq 51.435220 and type eq school",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"air-nearest"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "lat eq 35.599566 and lon eq 51.435220 and type eq school"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "route-nearest",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjZjZDkyZjc1ZDEzNmQ0MjJkYWY0MTc5N2VjNjQyZmQwYmFiNDdiMTY3M2E5MTE1NjI5NWVhZGViZjI0MzhjZDE3NmRlZGQ3ZGQ5Y2Q5MzcwIn0.eyJhdWQiOiIxNzAiLCJqdGkiOiI2Y2Q5MmY3NWQxMzZkNDIyZGFmNDE3OTdlYzY0MmZkMGJhYjQ3YjE2NzNhOTExNTYyOTVlYWRlYmYyNDM4Y2QxNzZkZWRkN2RkOWNkOTM3MCIsImlhdCI6MTYzMDgxOTYzNCwibmJmIjoxNjMwODE5NjM0LCJleHAiOjE2MzM1MDE2MzQsInN1YiI6IiIsInNjb3BlcyI6WyJiYXNpYyJdfQ.Lb717gi1K7Xz-1n4iGjARYyQTtv_6BE2BzOFhQeqSScIYigZjPSIqeLZHsgC0jysrYJyZNgjZbIBKQMrdUY5GIfCWEF5ql6fPb9BrArv4VtNGKK2QO7a7KCLnRV7lWyoOUV_GF1ZvaQxn0vY51KxF-FtFsaI_zXuf78poUaOjs_4eN8BbOwCIoslno7SJrTDYBl9xbRgPQiPjKHfPV-grbPZd-OSTRDtx5sseD2-3O2Mo54JekP5UbFr-pQ9w_MAMogyCffz4URjv5_JzAS5zfyXm8q17fw-qWsE1hlAoPUkQOHM4y35GU48gVIgvTPe2AdnoiU4XQs-6WdJN9HBSA",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/route-nearest?$filter=lat eq 35.599566 and lon eq 51.435220 and type eq school",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"route-nearest"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "lat eq 35.599566 and lon eq 51.435220 and type eq school"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "count",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/count?$filter=lat eq 35.599566 and lon eq 51.435220 and type eq school and buffer eq 15000",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"count"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "lat eq 35.599566 and lon eq 51.435220 and type eq school and buffer eq 15000"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/list?$skip=10&$top=10&$filter=lat eq 35.599566 and lon eq 51.435220 and type eq school and buffer eq 15000 and sort eq true",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"list"
+					],
+					"query": [
+						{
+							"key": "$skip",
+							"value": "10"
+						},
+						{
+							"key": "$top",
+							"value": "10"
+						},
+						{
+							"key": "$filter",
+							"value": "lat eq 35.599566 and lon eq 51.435220 and type eq school and buffer eq 15000 and sort eq true"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
