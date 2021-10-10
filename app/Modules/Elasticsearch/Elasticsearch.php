@@ -12,7 +12,7 @@ class Elasticsearch
     /**
      * @param $lon1
      * @param $lat1
-     * @param $type
+     * @param $subcategory
      * @param $buf
      * @param $take
      * @param $skip
@@ -20,7 +20,7 @@ class Elasticsearch
      * @param $sort
      * @return array
      */
-    public static function setParams($lon1, $lat1, $type, $buf, $take, $skip, $air_dist, $sort): array
+    public static function setParams($lon1, $lat1, $subcategory, $buf, $take, $skip, $air_dist, $sort): array
     {
         $query_parts = [
             'index' => 'map_data_fa_v2-1399-08-18',
@@ -41,7 +41,7 @@ class Elasticsearch
             $query_parts['body']['size'] = $take;
         }
         if ($lon1 and $lat1) {
-            if ($sort=='true') {
+            if ($sort == 'true') {
                 $sort = ['_geo_distance' => [
                     'locations.location01' => [
                         'lat' => $lat1,
@@ -69,9 +69,9 @@ class Elasticsearch
 
 
         }
-        if ($type) {
-            $type = ['term' => ['subcategory' => $type]];
-            array_push($query_parts['body']['query']['bool']['filter'], $type);
+        if ($subcategory) {
+            $subcategory = ['term' => ['subcategory' => $subcategory]];
+            array_push($query_parts['body']['query']['bool']['filter'], $subcategory);
         }
         if ($buf and $lon1 and $lat1) {
             $distance_filter = ['geo_distance' => [
@@ -94,6 +94,7 @@ class Elasticsearch
     public static function getPlaces($params)
     {
         $query = self::search($params);
+//        dd($query);
         if ($query['hits']['total']['value'] == 0) {
             return null;
         } else {
@@ -110,7 +111,16 @@ class Elasticsearch
                 $place_lat = $place->location['location01']['lat'];
                 $place_lon = $place->location['location01']['lon'];
                 unset($place->location);
-                $place->location['type'] = 'point';
+                if ($src['type'] == 'polygon') {
+                    $place->geometry['type'] = $src['polygons']['type'];
+                    $place->geometry['coordinates'] = $src['polygons']['coordinates'];
+                }
+//                if ($src['type'] == 'point') {
+//                    $place->geometry['type'] = $src['type'];
+//                    $place->geometry['coordinates'][] = $place_lon;
+//                    $place->geometry['coordinates'][] = $place_lat;
+//                }
+                $place->location['type'] = $src['type'];
                 $place->location['coordinates'] = [
                     $place_lon,
                     $place_lat
@@ -157,6 +167,7 @@ class Elasticsearch
             $place['type'],
             $place['subcategory'],
             $place['locations'],
+//            $place['geometry'],
             $distance
         );
 
