@@ -31,6 +31,7 @@ class Place
      * @param $subcategory
      * @param $location
      * @param $distance
+     * @param $geometry
      * return place info
      */
 
@@ -49,6 +50,7 @@ class Place
         $this->type = $type;
         $this->subcategory = $subcategory;
         $this->location = $location;
+//        $this->geometry = $geometry;
         $this->distance = $distance;
     }
 }

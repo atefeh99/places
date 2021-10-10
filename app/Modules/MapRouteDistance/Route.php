@@ -14,7 +14,7 @@ class Route
         $this->url = $url;
     }
 
-    public function get($coordinates, $alternatives, $steps = true, $overview = true, $type = 'Route')
+    public function get($coordinates, $alternatives,$apiKey, $steps = true, $overview = true, $type = 'Route')
     {
         $this->coordinates = $coordinates;
         $this->alternatives = $alternatives;
@@ -26,11 +26,11 @@ class Route
         $curl = new CURL(
             $this->makeURL()
         );
-
 //        $curl->setHeaders([
 //            'Content-Type: application/json',
 //            'x-api-key:' . $this->apiKey
 //        ]);
+//        dd($curl);
         $curl->post();
         return $curl->parse();
     }

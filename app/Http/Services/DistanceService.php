@@ -12,13 +12,13 @@ class DistanceService
     /**
      * @param $lon1
      * @param $lat1
-     * @param $type
+     * @param $subcategory
      * @param $buf
      * @return array[]|null[]
      */
-    public static function numberOfNearestPlaces($lon1, $lat1, $type, $buf)
+    public static function numberOfNearestPlaces($lon1, $lat1, $subcategory, $buf)
     {
-        $params = Elasticsearch::setParams($lon1, $lat1, $type, $buf, null, null, false, false);
+        $params = Elasticsearch::setParams($lon1, $lat1, $subcategory, $buf, null, null, false, false);
         $data = Elasticsearch::count($params);
         return ['data' => $data, 'count' => $data];
     }
@@ -26,7 +26,7 @@ class DistanceService
     /**
      * @param $lon1
      * @param $lat1
-     * @param $type
+     * @param $subcategory
      * @param $buf
      * @param $take
      * @param $skip
@@ -34,10 +34,10 @@ class DistanceService
      * @return array
      */
 
-    public static function listOfNearestPlaces($lon1, $lat1, $type, $buf, $take, $skip, $sort)
+    public static function listOfNearestPlaces($lon1, $lat1, $subcategory, $buf, $take, $skip, $sort)
     {
         // $air_dist = $sort;
-        $params = Elasticsearch::setParams($lon1, $lat1, $type, $buf, $take, $skip, true, $sort);
+        $params = Elasticsearch::setParams($lon1, $lat1, $subcategory, $buf, $take, $skip, true, $sort);
         $places = Elasticsearch::getPlaces($params);
         $count = 0;
         if ($places) {
@@ -53,12 +53,12 @@ class DistanceService
     /**
      * @param $lon1
      * @param $lat1
-     * @param $type
+     * @param $subcategory
      * @return array[]|null[]
      */
-    public static function airNearest($lon1, $lat1, $type)
+    public static function airNearest($lon1, $lat1, $subcategory)
     {
-        $params = Elasticsearch::setParams($lon1, $lat1, $type, null, 1, 0, true, true);
+        $params = Elasticsearch::setParams($lon1, $lat1, $subcategory, null, 1, 0, true, true);
         $data = Elasticsearch::getPlaces($params);
 
         return ['data' => $data[0]];
@@ -67,18 +67,18 @@ class DistanceService
     /**
      * @param $lon1
      * @param $lat1
-     * @param $type
+     * @param $subcategory
      * @param $api_key
      * @return array|null[]
      */
 
-    public static function routeNearest($lon1, $lat1, $type)
+    public static function routeNearest($lon1, $lat1, $subcategory,$api_key)
     {
         $data = null;
-        $params = Elasticsearch::setParams($lon1, $lat1, $type, null, 100, 0, false, true);
+        $params = Elasticsearch::setParams($lon1, $lat1, $subcategory, null, 100, 0, false, true);
         $places = Elasticsearch::getPlaces($params);
         if ($places) {
-            $res = self::setDistance($places, $lon1, $lat1);
+            $res = self::setDistance($places, $lon1, $lat1,$api_key);
             if ($res !== 'unauthorized') {
                 $sorted_res = self::sortByDistance($res);
                 $data = $sorted_res[0];
@@ -98,7 +98,7 @@ class DistanceService
      * @return array|string
      */
 
-    public static function setDistance($places, $lon1, $lat1)
+    public static function setDistance($places, $lon1, $lat1,$api_key)
     {
 
         $result = array();
@@ -106,7 +106,7 @@ class DistanceService
         foreach ($places as $place) {
             $lon2 = $place->location['coordinates'][0];
             $lat2 = $place->location['coordinates'][1];
-            $distance = self::getDistance($lon1, $lat1, $lon2, $lat2);
+            $distance = self::getDistance($lon1, $lat1, $lon2, $lat2,$api_key);
             if ($distance == null) {
                 return 'unauthorized';
             }
@@ -128,7 +128,7 @@ class DistanceService
      * use map.ir api to calculate route distance
      */
 
-    public static function getDistance($lon1, $lat1, $lon2, $lat2)
+    public static function getDistance($lon1, $lat1, $lon2, $lat2,$api_key)
     {
         $url = env('MAP_URL');
         $coordinates = $lon1 . ',' . $lat1 . ';' . $lon2 . ',' . $lat2;
@@ -138,7 +138,8 @@ class DistanceService
         $type = 'Route';
         $route = new Route($url);
         $dist = null;
-        $re = $route->get($coordinates, $alternatives, $steps, $overview, $type);
+        $re = $route->get($coordinates, $alternatives,$api_key, $steps, $overview, $type);
+//        dd($re);
         if (isset($re['code']) && $re['code'] == "Ok") {
             $dist = $re['routes'][0]['legs'][0]['distance'];
         }
