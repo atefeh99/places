@@ -21,15 +21,15 @@ class Route
         $this->steps = $steps;
         $this->overview = $overview;
         $this->type = $type;
-        $this->apiKey = $apiKey;
+//        $this->apiKey = $apiKey;
 
         $curl = new CURL(
             $this->makeURL()
         );
-        $curl->setHeaders([
-            'Content-Type: application/json',
-            'x-api-key:' . $this->apiKey
-        ]);
+//        $curl->setHeaders([
+//            'Content-Type: application/json',
+//            'x-api-key:' . $this->apiKey
+//        ]);
 //        dd($curl);
         $curl->post();
         return $curl->parse();
