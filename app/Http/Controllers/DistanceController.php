@@ -39,7 +39,7 @@ class DistanceController extends Controller
 
         $lon = env('DEFAULT_LON');
         $lat = env('DEFAULT_LAT');
-        $type = env('DEFAULT_TYPE');
+        $subcategory = env('DEFAULT_SUBCATEGORY');
         $buf = env('DEFAULT_BUFFER');
         $sort = env('SORTED');
 
@@ -101,14 +101,14 @@ class DistanceController extends Controller
                     $lat = (float)$item['right'];
                 }
 
-                if ($item['left'] == 'type' && $item['operator'] == '=') {
-                    $validate = Validator::make(['type' => $item['right']], [
-                        'type' => 'string|required'
+                if ($item['left'] == 'subcategory' && $item['operator'] == '=') {
+                    $validate = Validator::make(['subcategory' => $item['right']], [
+                        'subcategory' => 'string|required'
                     ]);
                     if ($validate->fails()) {
                         return $responder->respondInvalidParams('1004', $validate->errors(), 'bad request');
                     }
-                    $type = $item['right'];
+                    $subcategory = $item['right'];
                 }
 
                 if ($item['left'] == 'buffer' && $item['operator'] == '=') {
@@ -131,13 +131,13 @@ class DistanceController extends Controller
                 }
             }
         }
-        return ['lon' => $lon, 'lat' => $lat, 'type' => $type, 'buffer' => $buf, 'take' => $take, 'skip' => $skip, 'sort' => $sort];
+        return ['lon' => $lon, 'lat' => $lat, 'subcategory' => $subcategory, 'buffer' => $buf, 'take' => $take, 'skip' => $skip, 'sort' => $sort];
     }
 
     /**
      * @param Request $request
      * @return mixed
-     * count nearest places of type specified in request in the buffer distance
+     * count nearest places of subcategory specified in request in the buffer distance
      */
 
     public function count(Request $request)
@@ -147,9 +147,9 @@ class DistanceController extends Controller
         if (!(is_object($input))) {
             $lon1 = $input['lon'];
             $lat1 = $input['lat'];
-            $type = $input['type'];
+            $subcategory = $input['subcategory'];
             $buf = $input['buffer'];
-            $result = DistanceService::numberOfNearestPlaces($lon1, $lat1, $type, $buf);
+            $result = DistanceService::numberOfNearestPlaces($lon1, $lat1, $subcategory, $buf);
             if ($result['data']) {
                 return $responder->respondItemResult(["count" => $result['count']]);
             } else {
@@ -173,12 +173,12 @@ class DistanceController extends Controller
         if (!(is_object($input))) {
             $lon1 = $input['lon'];
             $lat1 = $input['lat'];
-            $type = $input['type'];
+            $subcategory = $input['subcategory'];
             $buf = $input['buffer'];
             $take = $input['take'];
             $skip = $input['skip'];
             $sort = $input['sort'];
-            $result = DistanceService::listOfNearestPlaces($lon1, $lat1, $type, $buf, $take, $skip, $sort);
+            $result = DistanceService::listOfNearestPlaces($lon1, $lat1, $subcategory, $buf, $take, $skip, $sort);
             if ($result['data']) {
                 return $responder->respondArrayResult($result['data'], $result['count']);
             } else {
@@ -194,7 +194,7 @@ class DistanceController extends Controller
     /**
      * @param Request $request
      * @param $nearest
-     * the nearest place of type specified in request
+     * the nearest place of subcategory specified in request
      */
 
     public function nearestPlace(Request $request, $nearest)
@@ -205,16 +205,16 @@ class DistanceController extends Controller
         if (!(is_object($input))) {
             $lon1 = $input['lon'];
             $lat1 = $input['lat'];
-            $type = $input['type'];
+            $subcategory = $input['subcategory'];
             if ($nearest === 'air-nearest') {
-                $result = DistanceService::airNearest($lon1, $lat1, $type);
+                $result = DistanceService::airNearest($lon1, $lat1, $subcategory);
 
             } else {
                 $api_key = $request->header('x-api-key');
                 if (!isset($api_key)) {
                     throw new UnauthorizedUserException(trans('messages.custom.unauthorized_user'), 2001);
                 }
-                $result = DistanceService::routeNearest($lon1, $lat1, $type);
+                $result = DistanceService::routeNearest($lon1, $lat1, $subcategory, $api_key);
             }
 
             if ($result['data'] !== 'unauthorized' and $result['data']) {
