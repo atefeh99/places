@@ -43,7 +43,7 @@ class Handler extends ExceptionHandler
                 'data' => [
                     'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
                     'message' => trans('messages.custom.' . Response::HTTP_INTERNAL_SERVER_ERROR),
-                    'code' => 101
+                    'code' => 3000
                 ],
                 'status' => [
                     Response::HTTP_INTERNAL_SERVER_ERROR
@@ -57,78 +57,127 @@ class Handler extends ExceptionHandler
                         'message' => $e->getMessage(),
                         'code' => $e->getErrorCode()
                     ],
-                    'status' => Response::HTTP_UNAUTHORIZED
+                    'status' => 401
                 ];
             } elseif ($e instanceof Missing404Exception) {
                 $return_object = [
-                    'status' => 404,
-                    'message' => $e->getMessage(),
-                    'code' => 2001
+                    'data' => [
+                        'status' => Response::HTTP_NOT_FOUND,
+                        'message' => $e->getMessage(),
+                        'code' => 3001
+                    ],
+                    'status' => Response::HTTP_NOT_FOUND,
                 ];
 
             } elseif ($e instanceof NoNodesAvailableException) {
                 $return_object = [
+                    'data' => [
+                        'status' => Response::HTTP_NOT_FOUND,
+                        'message' => trans('messages.custom.503'),
+                        'code' => 3002
+
+                    ],
                     'status' => 503,
-                    'message' => trans('messages.custom.503'),
-                    'code' => 2002
+
                 ];
             } elseif ($e instanceof RequestTimeout408Exception) {
                 $return_object = [
+                    'data' => [
+                        'status' => Response::HTTP_REQUEST_TIMEOUT,
+                        'message' =>  trans('messages.custom.408'),
+                        'code' => 3003
+
+                    ],
                     'status' => 408,
-                    'message' => trans('messages.custom.408'),
-                    'code' => 2003
+
                 ];
             } /*invalid param */ elseif ($e instanceof \InvalidArgumentException) {
                 $return_object = [
+                    'data' => [
+                        'status' => Response::HTTP_BAD_REQUEST,
+                        'message' =>  $e->getMessage(),
+                        'code' =>  3004
+
+                    ],
                     'status' => 400,
-                    'message' => $e->getMessage(),
-                    'code' => 2004
+
                 ];
             } /*invalid method */ elseif ($e instanceof MethodNotAllowedHttpException) {
                 $return_object = [
+                    'data' => [
+                        'status' => Response::HTTP_METHOD_NOT_ALLOWED,
+                        'message' =>  trans('messages.custom.405'),
+                        'code' =>  3005
+
+                    ],
                     'status' => 405,
-                    'message' => trans('messages.custom.405'),
-                    'code' => 2005
+
                 ];
             } elseif ($e instanceof AuthorizationException) {
                 $return_object = [
+                    'data' => [
+                        'status' => Response::HTTP_UNAUTHORIZED,
+                        'message' =>  trans('messages.custom.401'),
+                        'code' =>  3006
+
+                    ],
                     'status' => 401,
-                    'message' => trans('messages.custom.401'),
-                    'code' => 2006
+
                 ];
             } elseif ($e instanceof ValidationException) {
                 $return_object = [
-                    'status' => 400,
-                    'message' => trans('messages.custom.400'),
-                    'code' => 2007
+                    'data' => [
+                        'status' => Response::HTTP_UNAUTHORIZED,
+                        'message' =>  trans('messages.custom.401'),
+                        'code' => 3007
+
+                    ],
+                    'status' => 401,
+
                 ];
             } /* wasn't able to find a route to for the request*/ elseif ($e instanceof NotFoundHttpException) {
                 $return_object = [
+                    'data' => [
+                        'status' => Response::HTTP_NOT_FOUND,
+                        'message' => trans('messages.custom.404'),
+                        'code' => 3008
+
+                    ],
                     'status' => 404,
-                    'message' => trans('messages.custom.404'),
-                    'code' => 2008
                 ];
             } elseif ($e instanceof HttpException) {
                 $return_object = [
+                    'data' => [
+                        'status' => Response::HTTP_BAD_REQUEST,
+                        'message' => trans('messages.custom.400'),
+                        'code' => 3009
+
+                    ],
                     'status' => 400,
-                    'message' => trans('messages.custom.400'),
-                    'code' => 2009
+
                 ];
             } /*invalid uri */ elseif ($e instanceof BadRequestException) {
                 $return_object = [
-                    'status' => $e->getCode(),
-                    'message' => $e->getMessage(),
-                    'fields' => $e->getFields(),
-                    'code' => $e->getStatusCode()
+                    'data' => [
+                        'status' => Response::HTTP_BAD_REQUEST,
+                        'fields' => $e->getFields(),
+                        'message' => $e->getMessage(),
+                        'code' => 3010
+                    ],
+                    'status' => $e->getStatusCode(),
+
                 ];
             } elseif ($e instanceof Exception) {
                 $return_object = [
+                    'data' => [
+                        'status'=> $e->getStatusCode(),
+                        'message' => 'Server Error',
+                        'code' => 2011
+                    ],
                     'status' => 500,
-                    'message' => 'Server Error',
-                    'code' => 2010
+
                 ];
             }
-            $debug = env('APP_DEBUG');
             $response = parent::render($request, $e);
 
             /*not found the index */
