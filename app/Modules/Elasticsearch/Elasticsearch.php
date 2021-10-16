@@ -23,7 +23,7 @@ class Elasticsearch
     public static function setParams($lon1, $lat1, $subcategory, $buf, $take, $skip, $air_dist, $sort): array
     {
         $query_parts = [
-            'index' => 'map_data_fa_v2-1399-08-18',
+            'index' => env('ELASTIC_INDEX_FA'),
             'body' => [
                 'query' => [
                     'bool' => [
