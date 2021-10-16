@@ -29,7 +29,9 @@ return [
             'resource_not_found' => 'resource not found',
             'model_not_found' => 'requested :model not found',
             'unauthorized' => 'unauthorized',
-            'query' => 'query exception'
+            'query' => 'query exception',
+            'databaseError'=> 'database error',
+            'badParams'=>'bad request'
         ],
         'success' => [
             'update' => 'updated successfully',

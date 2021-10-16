@@ -54,7 +54,7 @@ class Handler extends ExceptionHandler
                 $return_object = [
                     'data' => [
                         'status' => Response::HTTP_UNAUTHORIZED,
-                        'message' => $e->getMessage(),
+                        'message' => trans('messages.custom.401'),
                         'code' => $e->getErrorCode()
                     ],
                     'status' => 401
@@ -63,7 +63,7 @@ class Handler extends ExceptionHandler
                 $return_object = [
                     'data' => [
                         'status' => Response::HTTP_NOT_FOUND,
-                        'message' => $e->getMessage(),
+                        'message' => trans('messages.custom.error.databaseError'),
                         'code' => 3001
                     ],
                     'status' => Response::HTTP_NOT_FOUND,
@@ -95,7 +95,7 @@ class Handler extends ExceptionHandler
                 $return_object = [
                     'data' => [
                         'status' => Response::HTTP_BAD_REQUEST,
-                        'message' =>  $e->getMessage(),
+                        'message' => trans('messages.custom.400'),
                         'code' =>  3004
 
                     ],
@@ -161,7 +161,7 @@ class Handler extends ExceptionHandler
                     'data' => [
                         'status' => Response::HTTP_BAD_REQUEST,
                         'fields' => $e->getFields(),
-                        'message' => $e->getMessage(),
+                        'message' => trans('messages.custom.error.badParams'),
                         'code' => 3010
                     ],
                     'status' => $e->getStatusCode(),
